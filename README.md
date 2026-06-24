@@ -1,6 +1,8 @@
 # Data Structures and Algorithms
 
-This repository contains my journey learning:
+# DSA And Algorithms
+
+My journey to learning Data Structures and Algorithms.
 
 - Arrays
 - Linked Lists
