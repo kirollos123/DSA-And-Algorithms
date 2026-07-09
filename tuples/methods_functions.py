@@ -1,0 +1,7 @@
+numbers =(10,2,7,2,2,-5)
+print(numbers.count(2))
+print(numbers.index(2))
+print(min (numbers),max(numbers))
+lst =sorted(numbers)
+print (tuple(sorted (numbers)))
+print (tuple(reversed(numbers)))

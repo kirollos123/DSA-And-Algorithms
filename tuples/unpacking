@@ -1,0 +1,14 @@
+lst = 1, 2, 3, 4, 5
+a, b, c, d, e = lst
+a, _, _, _, _ = lst
+a, b, *c = lst
+print(c)
+*a, b, c = lst
+print(a)
+a, b, c, *d = lst
+print(d)
+
+
+def f(*items):
+    print(items)
+    f(1, 2, 3, 4, 5)

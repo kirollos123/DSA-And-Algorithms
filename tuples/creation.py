@@ -1,0 +1,13 @@
+t= ('kirollos',12 ,2.5,12)
+t = ('kirollos',12 ,2.5,12,)
+t= (10)
+print(type(t))
+t= (10,)
+t=()
+print (len((True ,'kirollos')))
+x ,y= 1,2
+x,y=(1,2)
+(x,y) = (1,2)
+t =tuple((1,2,3))
+t= tuple([1,2,3])
+t=tuple('kirollos')
