@@ -1,0 +1,6 @@
+print(''.isspace())
+print('\n'.isspace())
+print('\n\tHello \t '.strip)
+print(' Hi kirollos Hi'.replace('Hi ', 'kiro'))
+print('\n  I am 33 '.split())
+print('Hey \n How \n Are you ?'.splitlines())
