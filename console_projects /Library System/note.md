@@ -1,3 +1,18 @@
+Book
+ ↓
+represents a book
+
+User
+ ↓
+represents a user
+
+BackendManager
+ ↓
+stores + manages Books and Users
+
+FrontendManager
+ ↓
+talks to the user and calls BackendManager
 ## `str.isdecimal()`
 
 **Definition:**  
@@ -385,3 +400,167 @@ to validate user input in a real application. Use normal validation with `if` in
 
 **Think:**
 `assert` → "This condition should be true."
+## Storing Objects in Lists
+
+When a class is responsible for managing multiple objects, we can create lists inside `__init__` to store those objects.
+
+```python
+class BackendManager:
+    def __init__(self):
+        self.books = []
+        self.users = []
+```
+
+### The idea
+
+```python
+self.books = []
+```
+
+means:
+
+> Create an empty list that will be used to store `Book` objects.
+
+```python
+self.users = []
+```
+
+means:
+
+> Create an empty list that will be used to store `User` objects.
+
+For example:
+
+```python
+manager.books.append(book1)
+manager.users.append(user1)
+```
+
+Now:
+
+```text
+manager
+│
+├── books → [book1, book2, ...]
+│
+└── users → [user1, user2, ...]
+```
+
+### Important Note
+
+`self.books = []` **does not store any books when the `BackendManager` is created**.
+
+It only creates an **empty list** that is ready to store objects later.
+
+We can add objects using:
+
+```python
+.append()
+```
+
+### OOP Concept
+
+This is an example of using **Instance Attributes** to store a collection of objects inside another object.
+
+The relationship is:
+
+```text
+BackendManager
+    │
+    ├── Books
+    └── Users
+```
+
+So, the `BackendManager` is responsible for managing collections of `Book` and `User` objects.
+## Prefix Search with `startswith()`
+
+```python
+def get_books_with_prefix(self, prefix):
+    result = []
+
+    for book in self.books:
+        if book.name.startswith(prefix):
+            result.append(book)
+
+    return result
+```
+
+### Purpose
+
+Search through the books list and return only the books whose names **start with the given prefix**.
+
+### How it works
+
+1. Create an empty list to store matching books:
+
+```python
+result = []
+```
+
+2. Loop through all books:
+
+```python
+for book in self.books:
+```
+
+3. Check whether the book name starts with the prefix:
+
+```python
+if book.name.startswith(prefix):
+```
+
+`startswith()` returns:
+
+* `True` → the name starts with the prefix.
+* `False` → it does not.
+
+4. Add matching books to the result:
+
+```python
+result.append(book)
+```
+
+5. Return the matching books:
+
+```python
+return result
+```
+
+### Example
+
+```python
+get_books_with_prefix("Py")
+```
+
+Given:
+
+```text
+Python
+Programming
+SQL
+Java
+```
+
+Result:
+
+```text
+Python
+```
+
+### Key Concept
+
+This is a simple **prefix search / filtering system**.
+
+```text
+self.books
+    ↓
+loop through books
+    ↓
+startswith(prefix)
+    ↓
+matching books
+    ↓
+result
+```
+
+**Important:** `startswith()` itself is not a search engine. It is a string method used to check whether a string begins with a specific value.
