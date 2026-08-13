@@ -475,3 +475,258 @@ sys.exit()        # Exit the program
 > **`sys` → interact with the Python interpreter/runtime.**
 
 Both are part of Python's **Standard Library** and normally do not require `pip install`.
+
+# Python `os` & `sys` Modules
+
+## 1. Environment Variables
+
+An **Environment Variable** is a piece of information in the form:
+
+```text
+name → value
+```
+
+A process can access these variables to get or set information, especially configuration information.
+
+### Common Linux Environment Variables
+
+| Variable | Meaning                   |
+| -------- | ------------------------- |
+| `HOME`   | User's home directory     |
+| `USER`   | Current username          |
+| `PWD`    | Current working directory |
+
+Example:
+
+```bash
+echo $PWD
+```
+
+Example output:
+
+```text
+/home/moustafa/workspaces/
+```
+
+---
+
+# 2. `PYTHONPATH`
+
+`PYTHONPATH` is an **Environment Variable**.
+
+Its value is a list of directories.
+
+The primary purpose is to:
+
+> Add paths where Python can find user-defined modules.
+
+For example, if you have:
+
+```text
+project/
+├── main.py
+└── misc/
+    └── mymodule.py
+```
+
+You can add `misc/` to `PYTHONPATH` so that Python can search this directory when importing modules.
+
+---
+
+# 3. `PYTHONPATH` and `sys.path`
+
+One of the most important relationships:
+
+```text
+PYTHONPATH
+    ↓
+Directories are added
+    ↓
+sys.path
+    ↓
+Python searches these directories
+    ↓
+import module
+```
+
+`PYTHONPATH` contains additional directories that are added to Python's `sys.path`.
+
+Therefore, when Python executes:
+
+```python
+import mymodule
+```
+
+Python searches through the directories in:
+
+```python
+sys.path
+```
+
+---
+
+# 4. `os` Module
+
+The `os` module allows Python to interact with the operating system.
+
+One important use mentioned in this topic is accessing **Environment Variables** from Python.
+
+Import:
+
+```python
+import os
+```
+
+The `os` module can be used to work with environment variables from inside a Python program.
+
+---
+
+# 5. `sys` Module
+
+The `sys` module provides access to information and functionality related to the Python runtime.
+
+An important concept is:
+
+```python
+sys.path
+```
+
+`sys.path` is a list of directories that Python uses when searching for modules.
+
+Example:
+
+```python
+import sys
+
+print(sys.path)
+```
+
+You will get a list of directories that Python searches when resolving imports.
+
+---
+
+# 6. Changing `PYTHONPATH` from Linux
+
+You can modify `PYTHONPATH` from the operating system.
+
+There are two possibilities:
+
+* Change it for the current session.
+* Change it permanently.
+
+## Print all Environment Variables
+
+```bash
+printenv
+```
+
+---
+
+## Print Current `PYTHONPATH`
+
+```bash
+echo $PYTHONPATH
+```
+
+---
+
+## Change `PYTHONPATH` for the Current Session
+
+```bash
+export PYTHONPATH=$PYTHONPATH:/home/moustafa/misc
+```
+
+This adds:
+
+```text
+/home/moustafa/misc
+```
+
+to the existing `PYTHONPATH`.
+
+The change applies to the current session.
+
+---
+
+# 7. Important Relationship
+
+Remember this chain:
+
+```text
+Operating System
+      ↓
+Environment Variables
+      ↓
+PYTHONPATH
+      ↓
+Additional Python directories
+      ↓
+sys.path
+      ↓
+Python import mechanism
+```
+
+---
+
+# 8. Quick Revision
+
+### Environment Variable
+
+```text
+name → value
+```
+
+Used by processes to access information/configuration.
+
+### `PYTHONPATH`
+
+An environment variable containing directories that Python should additionally search for user-defined modules.
+
+### `sys.path`
+
+A Python list containing directories searched when Python looks for modules.
+
+### `os`
+
+Python module used to interact with the operating system, including environment variables.
+
+### `sys`
+
+Python module related to the Python runtime, including the module search path `sys.path`.
+
+---
+
+# 9. Linux Commands to Remember
+
+```bash
+printenv
+```
+
+Print environment variables.
+
+```bash
+echo $PYTHONPATH
+```
+
+Print the current `PYTHONPATH`.
+
+```bash
+export PYTHONPATH=$PYTHONPATH:/path/to/directory
+```
+
+Add a directory to `PYTHONPATH` for the current session.
+
+---
+
+# Key Takeaways
+
+1. Environment Variables store information that processes can access.
+2. `PYTHONPATH` is an Environment Variable.
+3. `PYTHONPATH` is mainly used to add paths for user-defined modules.
+4. Directories from `PYTHONPATH` are added to `sys.path`.
+5. `sys.path` controls directories Python searches when importing modules.
+6. `os` can be used to access Environment Variables from Python.
+7. `printenv` displays environment variables on Linux.
+8. `echo $PYTHONPATH` displays the current `PYTHONPATH`.
+9. `export` can change `PYTHONPATH` for the current session.
+10. Permanent changes depend on the operating system and shell configuration.
