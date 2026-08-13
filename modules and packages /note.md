@@ -730,3 +730,274 @@ Add a directory to `PYTHONPATH` for the current session.
 8. `echo $PYTHONPATH` displays the current `PYTHONPATH`.
 9. `export` can change `PYTHONPATH` for the current session.
 10. Permanent changes depend on the operating system and shell configuration.
+# Circular Import in Python
+
+## 1. What is Circular Import?
+
+A **Circular Import** happens when two or more Python modules depend on each other directly or indirectly.
+
+The simplest case:
+
+```text
+A → B
+↑   ↓
+└───┘
+```
+
+Meaning:
+
+```text
+A imports B
+B imports A
+```
+
+---
+
+## 2. Simple Example
+
+### `a.py`
+
+```python
+from b import func_b
+
+def func_a():
+    print("A")
+```
+
+### `b.py`
+
+```python
+from a import func_a
+
+def func_b():
+    print("B")
+```
+
+Here:
+
+```text
+a.py
+  ↓ imports
+b.py
+  ↓ imports
+a.py
+```
+
+This creates a **Circular Import**.
+
+---
+
+# 3. Why Does It Happen?
+
+When Python imports a module, it starts executing that module.
+
+For example:
+
+```python
+import a
+```
+
+Python starts:
+
+```text
+a.py
+  ↓
+import b
+  ↓
+b.py
+  ↓
+import a
+```
+
+But `a.py` has **not finished executing yet**.
+
+So `a` is only **partially initialized**.
+
+This can lead to errors such as:
+
+```text
+ImportError: cannot import name ...
+from partially initialized module ...
+```
+
+---
+
+# 4. Think of It as a Dependency Graph
+
+Modules can be viewed as a dependency graph.
+
+### Normal dependency
+
+```text
+A → B → C
+```
+
+This is one-directional.
+
+### Circular dependency
+
+```text
+A → B → C
+↑       ↓
+└───────┘
+```
+
+Here:
+
+```text
+A imports B
+B imports C
+C imports A
+```
+
+There is a **cycle**.
+
+Therefore, a Circular Import is better understood as a **cycle in the module dependency graph**, not a tree.
+
+---
+
+# 5. Direct vs Indirect Circular Import
+
+## Direct Circular Import
+
+```text
+A → B
+↑   ↓
+└───┘
+```
+
+```text
+A imports B
+B imports A
+```
+
+---
+
+## Indirect Circular Import
+
+```text
+A → B → C
+↑       ↓
+└───────┘
+```
+
+```text
+A imports B
+B imports C
+C imports A
+```
+
+The cycle can involve more than two modules.
+
+---
+
+# 6. How to Solve Circular Imports
+
+The best solution is usually to **reorganize the dependencies**.
+
+Instead of:
+
+```text
+A → B
+↑   ↓
+└───┘
+```
+
+Create a third module for shared functionality:
+
+```text
+       common
+       ↑    ↑
+       │    │
+       A    B
+```
+
+For example:
+
+```text
+project/
+├── a.py
+├── b.py
+└── common.py
+```
+
+Put shared functionality inside:
+
+```python
+# common.py
+
+def shared_function():
+    pass
+```
+
+Then:
+
+```python
+# a.py
+
+from common import shared_function
+```
+
+and:
+
+```python
+# b.py
+
+from common import shared_function
+```
+
+Now there is no circular dependency.
+
+---
+
+# 7. Important Concept
+
+A good module dependency should generally move in one direction:
+
+```text
+A → B → C
+```
+
+Avoid:
+
+```text
+A → B → C
+↑       ↓
+└───────┘
+```
+
+---
+
+# 8. Quick Revision
+
+| Concept               | Meaning                                                 |
+| --------------------- | ------------------------------------------------------- |
+| Module                | A Python file that can be imported                      |
+| Dependency            | One module depends on another                           |
+| Circular Import       | Modules depend on each other in a cycle                 |
+| Direct Cycle          | `A → B → A`                                             |
+| Indirect Cycle        | `A → B → C → A`                                         |
+| Partially Initialized | Module started importing but has not finished execution |
+| Best Solution         | Reorganize dependencies / extract shared code           |
+
+---
+
+# Key Takeaway
+
+```text
+Circular Import
+=
+A imports B
++
+B imports A
+```
+
+Or indirectly:
+
+```text
+A → B → C → A
+```
+
+The main problem is that Python tries to use a module while that module is still being initialized.
+
+> **Circular Import = a cycle in the module dependency graph.**
