@@ -1,0 +1,12 @@
+import datetime 
+dt =datetime.time(14,7)
+print(dt)
+print(dt.hour)
+print(dt.minute)
+print(dt.second)
+print(dt.microsecond)
+print(type(dt))
+print(datetime.time(14,7,59,300))
+dt = datetime.date.today()
+print(dt,type(dt))
+print(dt.ctime)
