@@ -561,3 +561,410 @@ open()
 read / write
   encode/decode file
 ```
+# Pickle & Shelve — Python Notes
+
+## 1. Serialization
+
+**Serialization** is the process of converting a Python object into a format that can be stored or transmitted.
+
+```
+Python Object
+     ↓
+Serialization
+     ↓
+Serialized Data
+     ↓
+File / Storage / Network
+```
+
+**Deserialization** is the opposite process:
+
+```
+Stored Data
+     ↓
+Deserialization
+     ↓
+Python Object
+```
+
+## 2. Pickle
+
+`pickle` is a built-in Python module used to serialize and deserialize Python objects.
+
+```python
+import pickle
+```
+
+It can work with many Python objects:
+- list
+- tuple
+- dict
+- set
+- class instances
+- and other Python objects
+
+### Serialization with `dump()`
+
+```python
+import pickle
+
+data = (2021, "4444", ((7, "wow"), [4, 5]))
+lst = [1, 251221, 30000]
+
+with open("data.pickle", "wb") as pickle_file:
+    pickle.dump(data, pickle_file)
+    pickle.dump(lst, pickle_file)
+```
+
+**Process:**
+```
+Python Objects
+     ↓
+pickle.dump()
+     ↓
+Serialized Binary Data
+     ↓
+data.pickle
+```
+
+### Deserialization with `load()`
+
+If we use `dump()` twice:
+
+```python
+pickle.dump(data, pickle_file)
+pickle.dump(lst, pickle_file)
+```
+
+we need to use `load()` twice in the same order:
+
+```python
+import pickle
+
+with open("data.pickle", "rb") as pickle_file:
+    data = pickle.load(pickle_file)
+    lst = pickle.load(pickle_file)
+
+print(data)
+print(lst)
+```
+
+Output:
+```
+(2021, '4444', ((7, 'wow'), [4, 5]))
+[1, 251221, 30000]
+```
+
+## 3. `wb` and `rb`
+
+Pickle works with binary files.
+
+### `wb`
+```python
+open("data.pickle", "wb")
+```
+- `w` = write
+- `b` = binary
+
+`wb` = **W**rite **B**inary
+
+### `rb`
+```python
+open("data.pickle", "rb")
+```
+- `r` = read
+- `b` = binary
+
+`rb` = **R**ead **B**inary
+
+## 4. Pickle Security
+
+**Never load an untrusted Pickle file.**
+
+```python
+pickle.load(untrusted_file)  # ❌
+```
+
+Pickle is not just a simple data format. During deserialization, it can potentially lead to code execution.
+
+```
+Untrusted Pickle File
+        ↓
+   pickle.load()
+        ↓
+Potential Code Execution
+```
+
+Only use Pickle files from trusted sources.
+
+## 5. Pickle Limitations
+
+### Python-specific
+
+Pickle is mainly designed for Python.
+
+```
+Python
+   ↓
+Pickle
+   ↓
+data.pickle
+```
+
+It is not a good general-purpose format for exchanging data between different programming languages.
+
+For cross-language data exchange, formats such as JSON or Protobuf may be more appropriate.
+
+### Binary
+
+Pickle files are binary and are not human-readable.
+
+### Compatibility
+
+Changes to class definitions can cause compatibility problems when loading old Pickle files.
+
+Therefore, Pickle is not always suitable for long-term storage.
+
+## 6. When to Use Pickle
+
+Pickle is useful when:
+- The project is written in Python.
+- You control the data.
+- The data is local.
+- You need to save Python objects.
+- You do not need cross-language compatibility.
+- The source is trusted.
+
+## 7. Shelve
+
+`shelve` provides a way to store Python objects on disk using a dictionary-like interface.
+
+**shelve = Persistent Dictionary**
+
+A normal dictionary:
+
+```python
+data = {}
+
+data["name"] = "Kirollos"
+data["age"] = 25
+```
+
+exists only while the program is running.
+
+With `shelve`:
+
+```python
+import shelve
+
+with shelve.open("data.shelve") as shelf:
+    shelf["name"] = "Kirollos"
+    shelf["age"] = 25
+```
+
+the data is stored on disk and can be accessed later.
+
+## 8. Reading from Shelve
+
+```python
+import shelve
+
+with shelve.open("data.shelve") as shelf:
+    print(shelf["name"])
+    print(shelf["age"])
+```
+
+Output:
+```
+Kirollos
+25
+```
+
+## 9. Shelve Keys
+
+Keys should be strings:
+
+```python
+shelf["name"] = "Kirollos"  # ✅
+shelf["age"] = 25           # ✅
+```
+
+Avoid:
+
+```python
+shelf[1] = "something"       # ❌
+```
+
+## 10. Shelve Values
+
+You can store Python objects as values:
+
+```python
+import shelve
+
+with shelve.open("data.shelve") as shelf:
+    shelf["numbers"] = [1, 2, 3]
+
+    shelf["user"] = {
+        "name": "Kirollos",
+        "age": 25
+    }
+
+    shelf["coordinates"] = (10, 20)
+```
+
+## 11. `shelve.open()` Flags
+
+Do not use:
+
+```python
+shelve.open("data.shelve", "wb")
+```
+
+`wb` is used with the normal `open()` function, not with `shelve`.
+
+### Important flags
+
+| Flag | Meaning |
+|------|---------|
+| `"c"` | Open if it exists, create if it doesn't |
+| `"n"` | Create a new empty database |
+| `"r"` | Read-only; database must exist |
+| `"w"` | Read/write; database must exist |
+
+### Create a database
+
+```python
+with shelve.open("data.shelve", "c") as shelf:
+    shelf["name"] = "Kirollos"
+```
+
+Or simply:
+
+```python
+with shelve.open("data.shelve") as shelf:
+    shelf["name"] = "Kirollos"
+```
+
+`"c"` is the default.
+
+## 12. Relationship Between Shelve and Pickle
+
+`shelve` provides the dictionary-like interface, while Pickle is used internally to serialize the values.
+
+```
+                 shelve
+                   ↓
+       Dictionary-like Interface
+                   ↓
+             Python Objects
+                   ↓
+                pickle
+                   ↓
+                  Disk
+```
+
+Therefore, the Pickle security warning also applies to Shelve.
+
+**Do not use a Shelve database from an untrusted source.**
+
+## 13. Pickle vs Shelve
+
+| Feature | pickle | shelve |
+|---|---|---|
+| Main purpose | Serialization | Persistent key-value storage |
+| API | `dump()` / `load()` | `shelf[key]` |
+| Python objects | ✅ | ✅ |
+| Keys | — | Strings |
+| Interface | Object stream | Dictionary-like |
+| Uses Pickle | — | ✅ |
+| Local Python projects | ✅ | ✅ |
+| Big Data | ❌ | ❌ |
+
+## 14. Pickle vs JSON
+
+### Pickle
+
+```python
+pickle.dump(data, file)
+```
+
+**Advantages**
+- Supports many Python objects.
+- Easy to use in Python projects.
+- Good for local Python storage.
+
+**Disadvantages**
+- Security risk with untrusted files.
+- Python-dependent.
+- Binary.
+- Possible compatibility problems.
+- Not ideal for general data exchange.
+
+### JSON
+
+```python
+import json
+
+json.dump(data, file)
+```
+
+**Advantages**
+- Human-readable.
+- Language-independent.
+- Excellent for APIs.
+- Good for data exchange.
+
+**Disadvantage**
+
+JSON cannot directly represent every Python object.
+
+## 15. Mental Model
+
+### Pickle
+
+```
+Python Object
+      ↓
+Serialization
+      ↓
+Binary File
+      ↓
+Deserialization
+      ↓
+Python Object
+```
+
+### Shelve
+
+```
+Key → Value
+     ↓
+Persistent Storage
+     ↓
+Disk
+     ↓
+Key → Value
+```
+
+## Key Takeaways
+
+**Serialization**
+Converting an object into a representation that can be stored or transmitted.
+
+**Deserialization**
+Converting serialized data back into an object.
+
+**Pickle**
+A Python serialization mechanism for storing and retrieving Python objects.
+
+**Shelve**
+A persistent, dictionary-like storage system that uses Pickle to serialize values.
+
+### Most Important Rule
+
+```python
+pickle.load(untrusted_file)  # ❌
+```
+
+**Never use Pickle or Shelve with untrusted data.**
